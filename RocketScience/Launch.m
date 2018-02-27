@@ -13,33 +13,31 @@ for(n = 1:secsFinish/timestep)
 
     velocity(n) = sqrt(perpVelocity(n)^2+tangVelocity(n)^2);
     
-    %k1=
     [SolidFuelLeft,LiquidFuelUsed,mass(n),TotalExtTank] = Weight(FullExtTank,LiquidFuelUsed,weightEmptyBooster, Throttle(n), timestep, jettison, t(n));
     [DragForce(n),pressure(n),Temp(n),Cd,CdOrb,DynamicPressure(n)] = Drag(velocity(n),height(n),jettison,Mach(n));
     [gravity(n), CentripetalAccl(n),effectiveGravity(n)] = Centripetal(height(n), tangVelocity(n));
     [MaxThrust(n),SolidRocketThrust(n), MainEngineThrust(n)] = Thrust(pressure(n),jettison,Throttle(n),n,timestep);
     accl(n) = (MaxThrust(n)-DragForce(n))/mass(n); %pound of force/slug of mass = feet/s^2
-    perpAcclk1 = (accl(n)*sin(ThrustAngle(n)) -effectiveGravity(n));
-    tangAcclk1 = accl(n)*cos(ThrustAngle(n));
-    k1 = sqrt(perpAcclk1^2 + tangAcclk1^2);
+    perpAccl = (accl(n)*sin(ThrustAngle(n)) -effectiveGravity(n));
+    tangAccl = accl(n)*cos(ThrustAngle(n));
+    Accl = sqrt(perpAccl^2 + tangAccl^2);
     
-    %k2 =
-    [~,~,massk2,~] = Weight(FullExtTank,LiquidFuelUsed,weightEmptyBooster, Throttle(n+1), timestep, jettison, t(n+1));
-    [DragForcek2,~,~,~,~,~] = Drag(velocity(n)+k1,height(n),jettison,Mach(n));
-    [~, ~,effectiveGravityk2] = Centripetal(height(n), tangVelocity(n)+tangAcclk1);
-    [MaxThrustk2,~, ~] = Thrust(pressure(n),jettison,Throttle(n+1),n+1,timestep);
-    acclk2 = (MaxThrustk2-DragForcek2)/massk2;
-    perpAcclk2 = acclk2*sin(ThrustAngle(n+1)) -effectiveGravityk2;
-    tangAcclk2 = acclk2*cos(ThrustAngle(n+1));
-    
-    perpVelocity(n+1) = perpVelocity(n) + timestep*1/2*(perpAcclk1+perpAcclk2);
-    tangVelocity(n+1) = tangVelocity(n) + timestep*1/2*(tangAcclk1+tangAcclk2);
+    perpVelocity(n+1) = perpVelocity(n) + timestep*(perpAccl);
+    tangVelocity(n+1) = tangVelocity(n) + timestep*(tangAccl);
     height(n+1) = height(n) + perpVelocity(n)*timestep;
     range(n+1) = range(n) + tangVelocity(n)*timestep; 
     [X_com(n),Y_com(n),Z_com(n)] = CoM(Throttle(n),timestep,n,SolidFuelLeft,jettison);
     Mach(n) = FindMach(velocity(n),((Temp(n)-32)/1.8) + 273.15); %T degrees faranheight to kelvin
-    realAccl(n) = sqrt(perpAcclk1^2+tangAcclk1^2);
+    realAccl(n) = sqrt(perpAccl^2+tangAccl^2);
 end
 GForce = accl/standardGravity;
 tmins = t/60;
 plot(tmins,height)
+
+%% Animate the simulation
+close all
+Trajectory = AnimateTrajectory(height,range,n);
+movie2avi(Trajectory, 'Trajectory.avi', 'compression', 'None');
+close all
+AnimateShuttle
+movie2avi(CloseUp, 'Shuttle.avi', 'compression', 'None');

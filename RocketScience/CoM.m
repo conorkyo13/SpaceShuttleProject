@@ -4,17 +4,6 @@ function[X_com, Y_com, Z_com] = CoM(Throttle, timestep, n, SolidFuelLeft, jettis
 % dynamically recalculated to factor in fuel used
 %
 % Returns the centre of mass X, Y, Z co-ordinates in that order
-% V3.0 - converted to function
-% V2.1 - finalised orbiter original centre of mass
-% V2.0 - static orbiter centre of mass, but negative Y value
-% V1.5 - dynamic effect of jettison added
-% V1.4 - LOX and LH2 locations updated based on new data
-% V1.3 - dynamic effect of LOX and LH2 added
-% V1.2 - changing amounts of solid fuel included
-% V1.1 - X location calculated
-% V1.0 - physical centre of mass, X set to zero
-% V0.1 - placeholder values to allow program to run
-
 
 Constants;
 
@@ -73,13 +62,22 @@ Y_fin = 68+Orb2ground; %original centre of mass location
 %not to be significantly outside the orbiter, the height of the orbiter
 %needed to be the above, worked out manually
 
-Z_Orb = ((Z_fin*(extTank+LH2+LOX+weightEmptyBooster*2+weightOrbiter+weightSolidFuel*2)-(Z_norm*(extTank+LOX+LH2+weightEmptyBooster*2+weightSolidFuel*2))))/weightOrbiter;
+Z_Orb = ((Z_fin*(extTank+LH2+LOX+weightEmptyBooster*2+weightOrbiter+weightSolidFuel*2) ...
+    -(Z_norm*(extTank+LOX+LH2+weightEmptyBooster*2+weightSolidFuel*2))))/weightOrbiter;
 
-Y_Orb = (Y_fin*(extTank+LH2+LOX+weightSolidFuel+weightEmptyBooster*2+weightOrbiter) - ((Y_tank*extTank)+(Y_SRB*2*weightEmptyBooster)+(Y_Sol1*weightSolidFuel)+(Y_O1*LOX)+(Y_H1*LH2)))/weightOrbiter;
+Y_Orb = (Y_fin*(extTank+LH2+LOX+weightSolidFuel+weightEmptyBooster*2+weightOrbiter) ...
+    - ((Y_tank*extTank)+(Y_SRB*2*weightEmptyBooster)+(Y_Sol1*weightSolidFuel)+(Y_O1*LOX)+(Y_H1*LH2)))/weightOrbiter;
 
 %Now, we finally get the final CoM pieces
 %Ignoring X_norm for calculation since it's just 0 anyway
-X_com = ((X_SRB*weightEmptyBooster*jettison/2)+(X_SRB*-1*weightEmptyBooster*jettison/2)+(X_SRB*SolidFuelLeft*0.25*jettison)+(X_SRB*SolidFuelLeft*0.25*jettison*-1))/(weightEmptyBooster*jettison + SolidFuelLeft*0.5*jettison);
-Y_com = ((Y_tank*extTank)+(Y_SRB*jettison*weightEmptyBooster)+((Y_SolFuel)*SolidFuelLeft)+((Y_LOX)*LOXLeft)+((Y_LH2)*LH2Left)+(Y_Orb*weightOrbiter))/(extTank+LOXLeft+LH2Left+SolidFuelLeft+weightEmptyBooster*jettison+weightOrbiter);
-Z_com = ((Z_norm*(extTank+weightEmptyBooster*jettison+SolidFuelLeft+LOXLeft+LH2Left)) + (Z_Orb*weightOrbiter))/(extTank+weightEmptyBooster*jettison+weightOrbiter+SolidFuelLeft+LOXLeft+LH2Left);
+X_com = ((X_SRB*weightEmptyBooster*jettison/2)+(X_SRB*-1*weightEmptyBooster*jettison/2) ... 
+    +(X_SRB*SolidFuelLeft*0.25*jettison)+(X_SRB*SolidFuelLeft*0.25*jettison*-1)) ...
+    /(weightEmptyBooster*jettison + SolidFuelLeft*0.5*jettison);
+
+Y_com = ((Y_tank*extTank)+(Y_SRB*jettison*weightEmptyBooster)+((Y_SolFuel)*SolidFuelLeft) ...
+    +((Y_LOX)*LOXLeft)+((Y_LH2)*LH2Left)+(Y_Orb*weightOrbiter)) ... 
+    /(extTank+LOXLeft+LH2Left+SolidFuelLeft+weightEmptyBooster*jettison+weightOrbiter);
+
+Z_com = ((Z_norm*(extTank+weightEmptyBooster*jettison+SolidFuelLeft+LOXLeft+LH2Left)) ...
+    + (Z_Orb*weightOrbiter))/(extTank+weightEmptyBooster*jettison+weightOrbiter+SolidFuelLeft+LOXLeft+LH2Left);
 

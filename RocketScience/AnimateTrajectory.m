@@ -1,4 +1,4 @@
-function myfilm = ani(height,range,n)
+function myfilm = AnimateTrajectory(height,range,n)
 % ani(height,range,number of points)
 % 3d animation for the trajectory of the space shuttle
 % 
@@ -25,5 +25,3 @@ for count = 1:100:n % in steps of 100 so it doesn't take that long to make
     myfilm((count-1)/100+1) = getframe(fig);
       
 end
-
-movie(myfilm)
