@@ -1,10 +1,22 @@
+%% Initialize the arrays of measurements we are interested in
 clear
-set_var
+timestep = 0.1; % s
+secsFinish = 8*60+40; % s
+steps = secsFinish/timestep;
+t = [0:timestep:secsFinish];
+
+% Everything in Imperial units
+[ perpVelocity, Temp, height, velocity, Mach, DragForce, accl, ...
+  CentripetalAccl, airDensity, DynamicPressure, mass, X_com, ...
+  Y_com, Z_com, pressure, MainEngineThrust, MaxThrust, ...
+  tangVelocity, acclUp, SolidFuelLeft, gravity, Y_model, Z_model, ...
+  range, effectiveGravity, SolidRocketThrust, realAccl ] ...
+= deal(zeros(1,steps));
+n=1;
 Constants
 
-%The main loop
-for(n = 1:secsFinish/timestep)
-    
+%% The main loop, runs the 8min40sec launch
+for(n = 1:steps)
     if(n>124/timestep)
         jettison=0;
     else
@@ -12,7 +24,6 @@ for(n = 1:secsFinish/timestep)
     end 
 
     velocity(n) = sqrt(perpVelocity(n)^2+tangVelocity(n)^2);
-    
     [SolidFuelLeft,LiquidFuelUsed,mass(n),TotalExtTank] = Weight(FullExtTank,LiquidFuelUsed,weightEmptyBooster, Throttle(n), timestep, jettison, t(n));
     [DragForce(n),pressure(n),Temp(n),Cd,CdOrb,DynamicPressure(n)] = Drag(velocity(n),height(n),jettison,Mach(n));
     [gravity(n), CentripetalAccl(n),effectiveGravity(n)] = Centripetal(height(n), tangVelocity(n));
@@ -34,7 +45,7 @@ GForce = accl/standardGravity;
 tmins = t/60;
 plot(tmins,height)
 
-%% Animate the simulation
+%% Animate the launch
 close all
 Trajectory = AnimateTrajectory(height,range,n);
 movie2avi(Trajectory, 'Trajectory.avi', 'compression', 'None');
