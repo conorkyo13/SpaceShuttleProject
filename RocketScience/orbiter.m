@@ -1,5 +1,5 @@
-function handle = orbiter(thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, timestep, Thrust)
-%handle = orbiter(thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, timestep, Thrust)
+function handle = orbiter(c,thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, Thrust)
+%handle = orbiter(thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, c.timestep, Thrust)
 %Function draws a single frame of the space shuttle in flight, showing the
 %remaining stages and a vector showing the thrust
 %All inputs are necessary
@@ -8,7 +8,7 @@ function handle = orbiter(thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, 
 %       and the direction which the rocket actually points
 %       ThrusterAngle-direction of the main engines
 %       n - the frame number
-%       timestep-the time in seconds between discrete time values, needed
+%       c.timestep-the time in seconds between discrete time values, needed
 %       for creating the constants in the constants file
 %       Thrust-Magnitude of the Thrust, for drawing the thrust vector
 %       Returns the handle which the shuttle was drawn in
@@ -39,17 +39,17 @@ function handle = orbiter(thrustAngle,ThrustFromShuttleAngle, ThrusterAngle, n, 
     
 	view(camera) %an approximately side on view shows the movement best
     if(n < 520) %Draw the external Tank
-        DrawDomedCone([0,0,184.2-(97+54.6)],theAngle,(97+54.6),extTankDiameter/2,extTankDiameter/2,[1,.4,0]); %Draw the external Tank
+        DrawDomedCone([0,0,184.2-(97+54.6)],theAngle,(97+54.6),c.extTankDiameter/2,c.extTankDiameter/2,[1,.4,0]); %Draw the external Tank
     else %Draw a representation of it being jettisoned
-        DrawDomedCone([0,0,184.2-(97+54.6)],theAngle+.3*(n-520)/20,(97+54.6),extTankDiameter/2,extTankDiameter/2,[1,.4,0]); 
+        DrawDomedCone([0,0,184.2-(97+54.6)],theAngle+.3*(n-520)/20,(97+54.6),c.extTankDiameter/2,c.extTankDiameter/2,[1,.4,0]); 
     end  
     
     if(n < 124) %Draw the SRBs
-        DrawDomedCone([-(extTankDiameter+SRBdiam)/2,0,0],theAngle,149.16,SRBdiam/2,SRBdiam/2,[1,1,1]);
-        DrawDomedCone([(extTankDiameter+SRBdiam)/2,0,0],theAngle,149.16,SRBdiam/2,SRBdiam/2,[1,1,1]);
+        DrawDomedCone([-(c.extTankDiameter+c.SRBdiam)/2,0,0],theAngle,149.16,c.SRBdiam/2,c.SRBdiam/2,[1,1,1]);
+        DrawDomedCone([(c.extTankDiameter+c.SRBdiam)/2,0,0],theAngle,149.16,c.SRBdiam/2,c.SRBdiam/2,[1,1,1]);
     elseif(n >124 && n <130) %Draw them being Jettisoned
-        DrawDomedCone([-(extTankDiameter+SRBdiam)/2,0,0],theAngle+.5*(n-124)/6,149.16,SRBdiam/2,SRBdiam/2,[1,1,1]);
-        DrawDomedCone([(extTankDiameter+SRBdiam)/2,0,0],theAngle+.5*(n-124)/6,149.16,SRBdiam/2,SRBdiam/2,[1,1,1]);
+        DrawDomedCone([-(c.extTankDiameter+c.SRBdiam)/2,0,0],theAngle+.5*(n-124)/6,149.16,c.SRBdiam/2,c.SRBdiam/2,[1,1,1]);
+        DrawDomedCone([(c.extTankDiameter+c.SRBdiam)/2,0,0],theAngle+.5*(n-124)/6,149.16,c.SRBdiam/2,c.SRBdiam/2,[1,1,1]);
     end
     %else they will not be drawn
     

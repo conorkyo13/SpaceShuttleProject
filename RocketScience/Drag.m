@@ -1,20 +1,12 @@
-function [DragForce,pressure,T,Cd,CdOrb,DynamicPressure] = Drag(velocity,height,jettison,Mach)
+function [DragForce,pressure,T,Cd,CdOrb,DynamicPressure] = Drag(c,velocity,height,jettison,Mach)
 % Drag(velocity,height,jettison,Mach)
 %
 % To find the overall drag force of the space shuttle
 % Uses the Mach at which the space shuttle is travelling at to find the
-% drag coeffiencts, while using the height to determine the temperature and
+% drag coefficients, while using the height to determine the temperature and
 % pressure at which we are at.
 %
 % v 3.2
-
-
-%constants
-extTankDiameter = 27.6; %feet
-extTankCrossArea = pi*extTankDiameter^2/4;
-SRBdiam = 12.7;
-SRBarea = pi*SRBdiam^2/4;
-OrbArea = 220*501/144;
 
 %nasa's earth atmosphere model given in imperial units
 
@@ -48,5 +40,5 @@ end
 
 airDensity = pressure/(1718*(T + 459.7)); %slugs/ft^3
 DynamicPressure = 1/2*airDensity*velocity^2;
-DragForce = Cd*extTankCrossArea*DynamicPressure + jettison*Cd*SRBarea*DynamicPressure + CdOrb*OrbArea*DynamicPressure;
+DragForce = Cd*c.extTankCrossArea*DynamicPressure + jettison*Cd*c.SRBarea*DynamicPressure + CdOrb*c.OrbArea*DynamicPressure;
 
